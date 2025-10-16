@@ -1,39 +1,39 @@
-const express = require('express');
-const axios = require('axios');
-const cors = require('cors');
+const express = require("express");
+const axios = require("axios");
 
 const app = express();
-app.use(cors());
+const PORT = process.env.PORT || 8080;
 
-// GET /me endpoint
-app.get('/me', async (req, res) => {
+// /me endpoint
+app.get("/me", async (req, res) => {
   try {
-    // Fetch cat fact
-    const response = await axios.get('https://catfact.ninja/fact', { timeout: 5000 });
+    const response = await axios.get("https://catfact.ninja/fact");
+    const fact = response.data.fact;
 
-    // Build JSON response
     const data = {
-      status: 'success',
+      status: "success",
       user: {
-        email: 'festiveokotieboh@gmail.com',
-        name: 'Festus Okagbare',
-        stack: 'Node.js/Express'
+        email: "festiveokotieboh@gmail.com",
+        name: "Festus Okagbare",
+        stack: "Node.js/Express",
       },
       timestamp: new Date().toISOString(),
-      fact: response.data.fact
+      fact: fact,
     };
 
     res.status(200).json(data);
-
   } catch (error) {
-    // If the cat fact API fails
     res.status(500).json({
-      status: 'error',
-      message: 'Could not fetch cat fact',
-      timestamp: new Date().toISOString()
+      status: "error",
+      message: "Failed to fetch cat fact",
+      timestamp: new Date().toISOString(),
     });
   }
 });
 
-const PORT = process.env.PORT || 3000;
+// Optional: root route for sanity check
+app.get("/", (req, res) => {
+  res.send("Server is running. Try /me endpoint.");
+});
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
